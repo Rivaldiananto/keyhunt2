@@ -17,6 +17,7 @@ email: RivaldiAnanto@gmail.com
 #include "bloom/bloom.h"
 #include "sha3/sha3.h"
 #include "util.h"
+#include <iostream>
 
 #include "secp256k1/SECP256k1.h"
 #include "secp256k1/Point.h"
@@ -90,24 +91,15 @@ struct tothread {
 
 // Fungsi untuk mengonversi biner ke heksadesimal
 std::string bin_to_hex(const std::string& bin_str) {
+    unsigned long long decimal_value = std::stoull(bin_str, 0, 2);  // Convert binary string to decimal
     std::stringstream ss;
-    ss << std::hex << std::bitset<264>(bin_str).to_ullong();
+    ss << std::setw(64) << std::setfill('0') << std::hex << decimal_value;  // Convert decimal to hex with padding
     return ss.str();
 }
 
 // Function to generate binary combinations and determine hex range
+
 void generate_combinations(const std::vector<std::string>& patterns, int count, Int& n_range_start, Int& n_range_end) {
-    std::vector<bool> v(patterns.size(), false);
-    std::fill(v.begin(), v.begin() + count, true);
-
-    std::string min_hex = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
-    std::string max_hex = "0";
-
-    do {
-        std::string combined_bin;
-        for (size_t i = 0; i < patterns.size(); ++i) {
-            if (v[i]) {
-                combined_bin += patterns[i];
             }
         }
         std::string hex_str = bin_to_hex(combined_bin);
@@ -565,24 +557,24 @@ int main(int argc, char **argv)	{
 				}
 			break;
 			case 'P': {
-				int pattern_count = atoi(optarg);
-				FLAGBINER = 1;
-                printf("Biner mode activated with pattern count: %d\n", pattern_count);
-				std::vector<std::string> patterns = {
-					"000001", "000011", "000111", "001000", "010101", "110001", "100110", "111000",
-					"111010", "100000", "100100", "101001", "111011", "101000", "110000", "001100",
-					"011110", "010011", "101110", "110010", "001101", "101011", "101101", "000000",
-					"111101", "110111", "010010", "100101", "100111", "110011", "110101", "101010",
-					"001001", "100010", "101111", "111110", "001010", "100011", "010111", "011000",
-					"011001", "011010", "011011", "011100", "111111", "000010", "000101", "010001",
-					"010100", "010110", "010000", "011101", "001011", "101100", "011111", "000100",
-					"110100", "110110", "111001", "001110", "000110", "111100", "001111", "100001"
-				};
-				if (pattern_count > patterns.size()) pattern_count = patterns.size();
-				generate_combinations(patterns, pattern_count, n_range_start, n_range_end);
-				std::cout << "Range Start (n_range_start): " << n_range_start.GetBase16() << std::endl;
-				std::cout << "Range End (n_range_end): " << n_range_end.GetBase16() << std::endl;
-			break;
+                    int pattern_count = atoi(optarg);
+                    FLAGBINER = 1;
+                    printf("Biner mode activated with pattern count: %d\n", pattern_count);
+                    std::vector<std::string> patterns = {
+                        "000001", "000011", "000111", "001000", "010101", "110001", "100110", "111000",
+                        "111010", "100000", "100100", "101001", "111011", "101000", "110000", "001100",
+                        "011110", "010011", "101110", "110010", "001101", "101011", "101101", "000000",
+                        "111101", "110111", "010010", "100101", "100111", "110011", "110101", "101010",
+                        "001001", "100010", "101111", "111110", "001010", "100011", "010111", "011000",
+                        "011001", "011010", "011011", "011100", "111111", "000010", "000101", "010001",
+                        "010100", "010110", "010000", "011101", "001011", "101100", "011111", "000100",
+                        "110100", "110110", "111001", "001110", "000110", "111100", "001111", "100001"
+                    };
+                    if (pattern_count > patterns.size()) pattern_count = patterns.size();
+                    generate_combinations(patterns, pattern_count, n_range_start, n_range_end);
+                    std::cout << "Range Start (n_range_start): " << n_range_start.GetBase16() << std::endl;
+                    std::cout << "Range End (n_range_end): " << n_range_end.GetBase16() << std::endl;
+                break;    
 			case 'c':
 				index_value = indexOf(optarg,cryptos,3);
 				switch(index_value) {
