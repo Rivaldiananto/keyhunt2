@@ -429,7 +429,7 @@ Int lambda,lambda2,beta,beta2;
 Secp256K1 *secp;
 
 
-class Int {
+class HexInt {
 public:
     void SetBase16(const char* hexStr) {
         value = hexStr;
