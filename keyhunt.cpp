@@ -3,8 +3,13 @@ Develop by RivaldiAnanto
 email: RivaldiAnanto@gmail.com
 */
 
-#include <iostream>
+#include <vector>
+#include <string>
+#include <sstream>
 #include <iomanip>
+#include <algorithm>
+#include <cstdlib>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -19,6 +24,7 @@ email: RivaldiAnanto@gmail.com
 #include "bloom/bloom.h"
 #include "sha3/sha3.h"
 #include "util.h"
+#include <iostream>
 
 #include "secp256k1/SECP256k1.h"
 #include "secp256k1/Point.h"
@@ -89,28 +95,6 @@ struct tothread {
 	char *rs;   //range start
 	char *rpt;  //rng per thread
 };
-
-// Fungsi untuk mengonversi biner ke heksadesimal
-std::string bin_to_hex(const std::string& bin_str) {
-    unsigned long long decimal_value = std::stoull(bin_str, 0, 2);  // Convert binary string to decimal
-    std::stringstream ss;
-    ss << std::setw(64) << std::setfill('0') << std::hex << decimal_value;  // Convert decimal to hex with padding
-    return ss.str();
-}
-
-// Function to generate binary combinations and determine hex range
-
-void generate_combinations(const std::vector<std::string>& patterns, int count, Int& n_range_start, Int& n_range_end) {
-            }
-        }
-        std::string hex_str = bin_to_hex(combined_bin);
-        if (hex_str < min_hex) min_hex = hex_str;
-        if (hex_str > max_hex) max_hex = hex_str;
-    } while (std::next_permutation(v.begin(), v.end()));
-
-    n_range_start.SetBase16(min_hex.c_str());
-    n_range_end.SetBase16(max_hex.c_str());
-}
 
 
 struct bPload	{
@@ -444,6 +428,47 @@ Int lambda,lambda2,beta,beta2;
 
 Secp256K1 *secp;
 
+
+class Int {
+public:
+    void SetBase16(const char* hexStr) {
+        value = hexStr;
+    }
+    std::string GetBase16() const {
+        return value;
+    }
+private:
+    std::string value;
+};
+
+std::string bin_to_hex(const std::string& bin_str) {
+    unsigned long long decimal_value = std::stoull(bin_str, 0, 2);
+    std::stringstream ss;
+    ss << std::setw(64) << std::setfill('0') << std::hex << decimal_value;
+    return ss.str();
+}
+
+void generate_combinations(const std::vector<std::string>& patterns, int count, Int& n_range_start, Int& n_range_end) {
+    std::string min_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+    std::string max_hex = "0";
+    std::vector<bool> v(patterns.size());
+    std::fill(v.begin() + patterns.size() - count, v.end(), true);
+
+    do {
+        std::string combined_bin;
+        for (int i = 0; i < v.size(); ++i) {
+            if (v[i]) {
+                combined_bin += patterns[i];
+            }
+        }
+        std::string hex_str = bin_to_hex(combined_bin);
+        if (hex_str < min_hex) min_hex = hex_str;
+        if (hex_str > max_hex) max_hex = hex_str;
+    } while (std::next_permutation(v.begin(), v.end()));
+
+    n_range_start.SetBase16(min_hex.c_str());
+    n_range_end.SetBase16(max_hex.c_str());
+}
 int main(int argc, char **argv)	{
 	char buffer[2048];
 	char rawvalue[32];
@@ -581,7 +606,6 @@ int main(int argc, char **argv)	{
 					std::cout << "Range End (n_range_end): " << n_range_end.GetBase16() << std::endl;
 					break;
 				}
-
 			case 'c':
 				index_value = indexOf(optarg,cryptos,3);
 				switch(index_value) {
