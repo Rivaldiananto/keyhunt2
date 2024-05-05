@@ -9,6 +9,11 @@ email: albertobsd@gmail.com
 #include <iostream>
 #include <bitset>
 
+int flags &= ~FLAGRANGE;
+int flags &= ~FLAGBITRANGE;
+#define FLAGBINER 0x04
+
+int flags = 0;  // Global flags variable to keep track of the options set
 #include <sstream>
 
 #include <stdint.h>
@@ -304,9 +309,8 @@ int FLAGUPDATEFILE1 = 0;
 
 int FLAGSTRIDE = 0;
 int FLAGSEARCH = 2;
-int FLAGBITRANGE = 0;
-int FLAGRANGE = 0;
-int FLAGBINER = 0;
+int flags &= ~FLAGBITRANGE;
+int flags &= ~FLAGRANGE;
 int FLAGFILE = 0;
 int FLAGMODE = MODE_ADDRESS;
 int FLAGCRYPTO = 0;
@@ -544,7 +548,7 @@ int main(int argc, char **argv)	{
 					}
 					bit_range_str_max = MPZAUX.GetBase16();
 					checkpointer((void *)bit_range_str_max,__FILE__,"malloc","bit_range_str_min" ,__LINE__ -1);
-					FLAGBITRANGE = 1;
+					flags |= FLAGBITRANGE;
 				}
 				else	{
 					fprintf(stderr,"[E] invalid bits param: %s.\n",optarg);
@@ -707,7 +711,7 @@ int main(int argc, char **argv)	{
 						case 1:
 							range_start = nextToken(&t);
 							if(isValidHex(range_start)) {
-								FLAGRANGE = 1;
+								flags |= FLAGRANGE;
 								range_end = secp->order.GetBase16();
 							}
 							else	{
@@ -718,7 +722,7 @@ int main(int argc, char **argv)	{
 							range_start = nextToken(&t);
 							range_end	 = nextToken(&t);
 							if(isValidHex(range_start) && isValidHex(range_end)) {
-									FLAGRANGE = 1;
+									flags |= FLAGRANGE;
 							}
 							else	{
 								if(isValidHex(range_start)) {
@@ -857,12 +861,12 @@ int main(int argc, char **argv)	{
 			}
 			else	{
 				fprintf(stderr,"[E] Start and End range can't be great than N\nFallback to random mode!\n");
-				FLAGRANGE = 0;
+				flags &= ~FLAGRANGE;
 			}
 		}
 		else	{
 			fprintf(stderr,"[E] Start and End range can't be the same\nFallback to random mode!\n");
-			FLAGRANGE = 0;
+			flags &= ~FLAGRANGE;
 		}
 	}
 	if(FLAGMODE != MODE_BSGS && FLAGMODE != MODE_MINIKEYS)	{
