@@ -9,11 +9,6 @@ email: albertobsd@gmail.com
 #include <iostream>
 #include <bitset>
 
-#define FLAGRANGE 0x01
-#define FLAGBITRANGE 0x02
-#define FLAGBINER 0x04
-
-int flags = 0;  // Global flags variable to keep track of the options set
 #include <sstream>
 
 #include <stdint.h>
@@ -311,6 +306,7 @@ int FLAGSTRIDE = 0;
 int FLAGSEARCH = 2;
 int FLAGBITRANGE = 0;
 int FLAGRANGE = 0;
+int FLAGBINER = 0;
 int FLAGFILE = 0;
 int FLAGMODE = MODE_ADDRESS;
 int FLAGCRYPTO = 0;
