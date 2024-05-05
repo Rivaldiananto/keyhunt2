@@ -4,7 +4,18 @@ email: albertobsd@gmail.com
 */
 
 #include <stdio.h>
+
 #include <stdlib.h>
+#include <iostream>
+#include <bitset>
+
+#define FLAGRANGE 0x01
+#define FLAGBITRANGE 0x02
+#define FLAGBINER 0x04
+
+int flags = 0;  // Global flags variable to keep track of the options set
+#include <sstream>
+
 #include <stdint.h>
 #include <string.h>
 #include <math.h>
@@ -412,6 +423,24 @@ Int lambda,lambda2,beta,beta2;
 
 Secp256K1 *secp;
 
+
+std::string convertBinaryRangeToHex(int P_value) {
+    std::bitset<6> bit_pattern;  // 6 bits for the range from 000000 to 111111
+    std::stringstream combined;
+
+    // Combine patterns up to P_value
+    for (int i = 0; i <= P_value; i++) {
+        bit_pattern = std::bitset<6>(i);
+        combined << bit_pattern;
+    }
+
+    // Convert the combined binary string into hexadecimal
+    unsigned long bin_value = std::bitset<64>(combined.str()).to_ulong();
+    std::stringstream hex_value;
+    hex_value << std::hex << std::uppercase << bin_value;
+
+    return hex_value.str();
+}
 int main(int argc, char **argv)	{
 	char buffer[2048];
 	char rawvalue[32];
@@ -470,16 +499,7 @@ int main(int argc, char **argv)	{
 		In any case that seed is for a failsafe RNG, the default source on linux is getrandom function
 		See https://www.2uo.de/myths-about-urandom/
 		*/
-	
-        } else if (strcmp(argv[i], "-P") == 0) {
-            flags |= FLAGBINER;
-            if (i + 1 < argc) {  // Ensure there's an argument after `-P`
-                int P_value = atoi(argv[i + 1]);
-                std::string hex_result = convertBinaryRangeToHex(P_value);
-                std::cout << "Hex result for -P " << P_value << ": " << hex_result << std::endl;
-                i++;  // Increment to skip the next argument since it's part of `-P`
-            }
-        }
+	}
 	else	{
 		/*
 			what year is??
