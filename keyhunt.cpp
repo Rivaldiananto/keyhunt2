@@ -137,7 +137,7 @@ char *raw_baseminikey = NULL;
 char *minikeyN = NULL;
 int minikey_n_limit;
 	
-const char *version = "0.2.230519 BTC Sathosi";
+const char *version = "0.2.060524 BTC Sathosi";
 
 #define CPU_GRP_SIZE 1024
 
@@ -547,7 +547,24 @@ int main(int argc, char **argv)	{
 		switch(c) {
 			case 'h':
 				menu();
-			break;
+			
+case 'P':
+    if(optarg != NULL) {
+        int pattern_count = atoi(optarg);
+        if(pattern_count > 0 && pattern_count <= 64) {
+            std::vector<std::string> selected_patterns(binary_patterns, binary_patterns + pattern_count);
+            // Further processing with selected_patterns
+            std::cout << "Biner mode activated with selected patterns count: " << pattern_count << std::endl;
+        } else {
+            std::cerr << "Error: -P option requires a count from 1 to 64." << std::endl;
+            exit(EXIT_FAILURE);
+        }
+    } else {
+        std::cerr << "Error: No input provided for -P option." << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    break;
+
 			case '6':
 				FLAGSKIPCHECKSUM = 1;
 				fprintf(stderr,"[W] Skipping checksums on files\n");
