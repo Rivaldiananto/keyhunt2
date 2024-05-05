@@ -1,16 +1,7 @@
-std::vector<std::string> binary_patterns = {"000001", "000011", "000111", "001000", "010101", "110001", "100110", "111000", "111010", "100000", "100100", "101001", "111011", "101000", "110000", "001100", "011110", "010011", "101110", "110010", "001101", "101011", "101101", "000000", "111101", "110111", "010010", "100101", "100111", "110011", "110101", "101010", "001001", "100010", "101111", "111110", "001010", "100011", "010111", "011000", "011001", "011010", "011011", "011100", "111111", "000010", "000101", "010001", "010100", "010110", "010000", "011101", "001011", "101100", "011111", "000100", "110100", "110110", "111001", "001110", "000110", "111100", "001111", "100001"};
-
 /*
-Develop by RivaldiAnanto
-email: RivaldiAnanto@gmail.com
+Develop by Alberto
+email: albertobsd@gmail.com
 */
-
-#include <vector>
-#include <string>
-#include <sstream>
-#include <iomanip>
-#include <algorithm>
-#include <cstdlib>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,7 +17,6 @@ email: RivaldiAnanto@gmail.com
 #include "bloom/bloom.h"
 #include "sha3/sha3.h"
 #include "util.h"
-#include <iostream>
 
 #include "secp256k1/SECP256k1.h"
 #include "secp256k1/Point.h"
@@ -36,12 +26,6 @@ email: RivaldiAnanto@gmail.com
 
 #include "hash/sha256.h"
 #include "hash/ripemd160.h"
-
-#include <getopt.h>
-#include <string>
-#include <algorithm>
-#include <bitset>
-#include <sstream>
 
 #if defined(_WIN64) && !defined(__CYGWIN__)
 #include "getopt.h"
@@ -98,7 +82,6 @@ struct tothread {
 	char *rpt;  //rng per thread
 };
 
-
 struct bPload	{
 	uint32_t threadid;
 	uint64_t from;
@@ -139,7 +122,7 @@ char *raw_baseminikey = NULL;
 char *minikeyN = NULL;
 int minikey_n_limit;
 	
-const char *version = "0.2.230519 BTC Sathosi";
+const char *version = "0.2.230519 Satoshi Quest";
 
 #define CPU_GRP_SIZE 1024
 
@@ -317,7 +300,6 @@ int FLAGSTRIDE = 0;
 int FLAGSEARCH = 2;
 int FLAGBITRANGE = 0;
 int FLAGRANGE = 0;
-int FLAGBINER = 0;
 int FLAGFILE = 0;
 int FLAGMODE = MODE_ADDRESS;
 int FLAGCRYPTO = 0;
@@ -430,47 +412,6 @@ Int lambda,lambda2,beta,beta2;
 
 Secp256K1 *secp;
 
-
-class HexInt {
-public:
-    void SetBase16(const char* hexStr) {
-        value = hexStr;
-    }
-    std::string GetBase16() const {
-        return value;
-    }
-private:
-    std::string value;
-};
-
-std::string bin_to_hex(const std::string& bin_str) {
-    unsigned long long decimal_value = std::stoull(bin_str, 0, 2);
-    std::stringstream ss;
-    ss << std::setw(64) << std::setfill('0') << std::hex << decimal_value;
-    return ss.str();
-}
-
-void generate_combinations(const std::vector<std::string>& patterns, int count, Int& n_range_start, Int& n_range_end) {
-    std::string min_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-    std::string max_hex = "0";
-    std::vector<bool> v(patterns.size());
-    std::fill(v.begin() + patterns.size() - count, v.end(), true);
-
-    do {
-        std::string combined_bin;
-        for (size_t i = 0; i < v.size(); ++i) {
-            if (v[i]) {
-                combined_bin += patterns[i];
-            }
-        }
-        std::string hex_str = bin_to_hex(combined_bin);
-        if (hex_str < min_hex) min_hex = hex_str;
-        if (hex_str > max_hex) max_hex = hex_str;
-    } while (std::next_permutation(v.begin(), v.end()));
-
-    n_range_start.SetBase16(min_hex.c_str());
-    n_range_end.SetBase16(max_hex.c_str());
-}
 int main(int argc, char **argv)	{
 	char buffer[2048];
 	char rawvalue[32];
@@ -529,7 +470,16 @@ int main(int argc, char **argv)	{
 		In any case that seed is for a failsafe RNG, the default source on linux is getrandom function
 		See https://www.2uo.de/myths-about-urandom/
 		*/
-	}
+	
+        } else if (strcmp(argv[i], "-P") == 0) {
+            flags |= FLAGBINER;
+            if (i + 1 < argc) {  // Ensure there's an argument after `-P`
+                int P_value = atoi(argv[i + 1]);
+                std::string hex_result = convertBinaryRangeToHex(P_value);
+                std::cout << "Hex result for -P " << P_value << ": " << hex_result << std::endl;
+                i++;  // Increment to skip the next argument since it's part of `-P`
+            }
+        }
 	else	{
 		/*
 			what year is??
@@ -543,30 +493,13 @@ int main(int argc, char **argv)	{
 	
 	
 	
-	printf("[+] Version %s, developed by RivaldiAnanto\n",version);
+	printf("[+] Version %s, developed by AlbertoBSD\n",version);
 
-	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:P:r:s:t:v:G:8:z:")) != -1) {
+	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:")) != -1) {
 		switch(c) {
 			case 'h':
 				menu();
-			
-case 'P':
-    if(optarg != NULL) {
-        int pattern_count = atoi(optarg);
-        if(pattern_count > 0 && pattern_count <= 64) {
-            std::vector<std::string> selected_patterns(binary_patterns, binary_patterns + pattern_count);
-            // Further processing with selected_patterns
-            std::cout << "Biner mode activated with selected patterns count: " << pattern_count << std::endl;
-        } else {
-            std::cerr << "Error: -P option requires a count from 1 to 64." << std::endl;
-            exit(EXIT_FAILURE);
-        }
-    } else {
-        std::cerr << "Error: No input provided for -P option." << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    break;
-
+			break;
 			case '6':
 				FLAGSKIPCHECKSUM = 1;
 				fprintf(stderr,"[W] Skipping checksums on files\n");
@@ -601,8 +534,6 @@ case 'P':
 					fprintf(stderr,"[E] invalid bits param: %s.\n",optarg);
 				}
 			break;
-				
-				}
 			case 'c':
 				index_value = indexOf(optarg,cryptos,3);
 				switch(index_value) {
@@ -850,7 +781,6 @@ case 'P':
 			break;
 			default:
 				fprintf(stderr,"[E] Unknow opcion -%c\n",c);
-				std::cerr << "Usage: " << argv[0] << " -P [pattern_count]" << std::endl;
 				exit(EXIT_FAILURE);
 			break;
 		}
@@ -919,27 +849,9 @@ case 'P':
 			FLAGRANGE = 0;
 		}
 	}
-	if (FLAGBINER) {
-			std::vector<std::string> patterns = {
-			"000001", "000011", "000111", "001000", "010101", "110001", "100110", "111000",
-			"111010", "100000", "100100", "101001", "111011", "101000", "110000", "001100",
-			"011110", "010011", "101110", "110010", "001101", "101011", "101101", "000000",
-			"111101", "110111", "010010", "100101", "100111", "110011", "110101", "101010",
-			"001001", "100010", "101111", "111110", "001010", "100011", "010111", "011000",
-			"011001", "011010", "011011", "011100", "111111", "000010", "000101", "010001",
-			"010100", "010110", "010000", "011101", "001011", "101100", "011111", "000100",
-			"110100", "110110", "111001", "001110", "000110", "111100", "001111", "100001"
-			};  // Contoh patterns
-			Int n_start_range, n_end_range;
-			generate_combinations(patterns, 11, n_start_range, n_end_range); // Menggunakan 11 pola
-
-			n_range_start.Set(&n_start_range);
-			n_range_end.Set(&n_end_range);
-			FLAGRANGE = 1;  // Aktifkan FLAGRANGE untuk menggunakan batas ini
-		}
 	if(FLAGMODE != MODE_BSGS && FLAGMODE != MODE_MINIKEYS)	{
 		BSGS_N.SetInt32(DEBUGCOUNT);
-		if(FLAGRANGE == 0 && FLAGBITRANGE == 0 && FLAGBINER == 0)	{
+		if(FLAGRANGE == 0 && FLAGBITRANGE == 0)	{
 			n_range_start.SetInt32(1);
 			n_range_end.Set(&secp->order);
 			n_range_diff.Set(&n_range_end);
@@ -1183,7 +1095,7 @@ case 'P':
 
 		bsgs_m = BSGS_M.GetInt64();
 
-		if(FLAGRANGE || FLAGBITRANGE || FLAGBINER)	{
+		if(FLAGRANGE || FLAGBITRANGE)	{
 			if(FLAGBITRANGE)	{	// Bit Range
 				n_range_start.SetBase16(bit_range_str_min);
 				n_range_end.SetBase16(bit_range_str_max);
@@ -5864,7 +5776,7 @@ void menu() {
 	printf("\nExample:\n\n");
 	printf("./keyhunt -m rmd160 -f tests/unsolvedpuzzles.rmd -b 66 -l compress -R -q -t 8\n\n");
 	printf("This line runs the program with 8 threads from the range 20000000000000000 to 40000000000000000 without stats output\n\n");
-	printf("Developed by rivaldiananto\tTips BTC: 1Coffee1jV4gB5gaXfHgSHDz9xx9QSECVW\n");
+	printf("Developed by AlbertoBSD\tTips BTC: 1Coffee1jV4gB5gaXfHgSHDz9xx9QSECVW\n");
 	printf("Thanks to Iceland always helping and sharing his ideas.\nTips to Iceland: bc1q39meky2mn5qjq704zz0nnkl0v7kj4uz6r529at\n\n");
 	exit(EXIT_FAILURE);
 }
