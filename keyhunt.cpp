@@ -1,21 +1,10 @@
 /*
-Develop by Alberto
-email: albertobsd@gmail.com
+Develop by rivaldiananto
+email: rivaldiananto@gmail.com
 */
 
 #include <stdio.h>
-
 #include <stdlib.h>
-#include <iostream>
-#include <bitset>
-
-int flags &= ~FLAGRANGE;
-int flags &= ~FLAGBITRANGE;
-#define FLAGBINER 0x04
-
-int flags = 0;  // Global flags variable to keep track of the options set
-#include <sstream>
-
 #include <stdint.h>
 #include <string.h>
 #include <math.h>
@@ -309,8 +298,9 @@ int FLAGUPDATEFILE1 = 0;
 
 int FLAGSTRIDE = 0;
 int FLAGSEARCH = 2;
-int flags &= ~FLAGBITRANGE;
-int flags &= ~FLAGRANGE;
+int FLAGBITRANGE = 0;
+int FLAGRANGE = 0;
+int FLAGBINER = 0;
 int FLAGFILE = 0;
 int FLAGMODE = MODE_ADDRESS;
 int FLAGCRYPTO = 0;
@@ -423,24 +413,6 @@ Int lambda,lambda2,beta,beta2;
 
 Secp256K1 *secp;
 
-
-std::string convertBinaryRangeToHex(int P_value) {
-    std::bitset<6> bit_pattern;  // 6 bits for the range from 000000 to 111111
-    std::stringstream combined;
-
-    // Combine patterns up to P_value
-    for (int i = 0; i <= P_value; i++) {
-        bit_pattern = std::bitset<6>(i);
-        combined << bit_pattern;
-    }
-
-    // Convert the combined binary string into hexadecimal
-    unsigned long bin_value = std::bitset<64>(combined.str()).to_ulong();
-    std::stringstream hex_value;
-    hex_value << std::hex << std::uppercase << bin_value;
-
-    return hex_value.str();
-}
 int main(int argc, char **argv)	{
 	char buffer[2048];
 	char rawvalue[32];
@@ -513,9 +485,9 @@ int main(int argc, char **argv)	{
 	
 	
 	
-	printf("[+] Version %s, developed by AlbertoBSD\n",version);
+	printf("[+] Version %s, developed by rivaldiananto\n",version);
 
-	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:")) != -1) {
+	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:P:I:k:l:m:N:n:p:r:s:t:v:G:8:z:")) != -1) {
 		switch(c) {
 			case 'h':
 				menu();
@@ -548,7 +520,7 @@ int main(int argc, char **argv)	{
 					}
 					bit_range_str_max = MPZAUX.GetBase16();
 					checkpointer((void *)bit_range_str_max,__FILE__,"malloc","bit_range_str_min" ,__LINE__ -1);
-					flags |= FLAGBITRANGE;
+					FLAGBITRANGE = 1;
 				}
 				else	{
 					fprintf(stderr,"[E] invalid bits param: %s.\n",optarg);
@@ -711,7 +683,7 @@ int main(int argc, char **argv)	{
 						case 1:
 							range_start = nextToken(&t);
 							if(isValidHex(range_start)) {
-								flags |= FLAGRANGE;
+								FLAGRANGE = 1;
 								range_end = secp->order.GetBase16();
 							}
 							else	{
@@ -722,7 +694,7 @@ int main(int argc, char **argv)	{
 							range_start = nextToken(&t);
 							range_end	 = nextToken(&t);
 							if(isValidHex(range_start) && isValidHex(range_end)) {
-									flags |= FLAGRANGE;
+									FLAGRANGE = 1;
 							}
 							else	{
 								if(isValidHex(range_start)) {
@@ -861,12 +833,12 @@ int main(int argc, char **argv)	{
 			}
 			else	{
 				fprintf(stderr,"[E] Start and End range can't be great than N\nFallback to random mode!\n");
-				flags &= ~FLAGRANGE;
+				FLAGRANGE = 0;
 			}
 		}
 		else	{
 			fprintf(stderr,"[E] Start and End range can't be the same\nFallback to random mode!\n");
-			flags &= ~FLAGRANGE;
+			FLAGRANGE = 0;
 		}
 	}
 	if(FLAGMODE != MODE_BSGS && FLAGMODE != MODE_MINIKEYS)	{
@@ -5796,7 +5768,7 @@ void menu() {
 	printf("\nExample:\n\n");
 	printf("./keyhunt -m rmd160 -f tests/unsolvedpuzzles.rmd -b 66 -l compress -R -q -t 8\n\n");
 	printf("This line runs the program with 8 threads from the range 20000000000000000 to 40000000000000000 without stats output\n\n");
-	printf("Developed by AlbertoBSD\tTips BTC: 1Coffee1jV4gB5gaXfHgSHDz9xx9QSECVW\n");
+	printf("Developed by rivaldiananto\tTips BTC: 1Coffee1jV4gB5gaXfHgSHDz9xx9QSECVW\n");
 	printf("Thanks to Iceland always helping and sharing his ideas.\nTips to Iceland: bc1q39meky2mn5qjq704zz0nnkl0v7kj4uz6r529at\n\n");
 	exit(EXIT_FAILURE);
 }
