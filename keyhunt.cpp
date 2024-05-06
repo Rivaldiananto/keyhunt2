@@ -1,5 +1,5 @@
 /*
-Develop by rivaldiananto
+Develop by Alberto
 email: rivaldiananto@gmail.com
 */
 
@@ -91,6 +91,48 @@ struct bPload	{
 	uint32_t aux;
 	uint32_t finished;
 };
+
+std::string binToHex(const std::string& bin) {
+    std::stringstream ss;
+    ss << std::hex << std::stoi(bin, nullptr, 2); // Konversi biner ke integer, kemudian ke hex
+    return ss.str();
+}
+
+int main() {
+    // Rentang biner yang diinginkan
+    std::string bin_start = "000000";
+    std::string bin_end = "111111";
+
+    // Konversi dari biner ke hexadecimal
+    std::string hex_start = binToHex(bin_start);
+    std::string hex_end = binToHex(bin_end);
+
+    // Tampilkan rentang dalam format yang sesuai untuk penggunaan internal atau sebagai parameter program
+    std::cout << "r " << hex_start << ":" << hex_end << std::endl;
+
+    return 0;
+}
+
+std::string getHexRange() {
+    // Misalnya, kita asumsikan `range_converter` adalah program konversi kita dan dijalankan dari lokasi yang sama.
+    std::string command = "./keyhunt";
+    std::string data;
+    char buffer[128];
+    FILE* pipe = popen(command.c_str(), "r");
+
+    if (!pipe) throw std::runtime_error("popen() failed!");
+    try {
+        while (fgets(buffer, sizeof buffer, pipe) != NULL) {
+            data += buffer;
+        }
+    } catch (...) {
+        pclose(pipe);
+        throw;
+    }
+
+    pclose(pipe);
+    return data;
+}
 
 #if defined(_WIN64) && !defined(__CYGWIN__)
 #define PACK( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop))
@@ -675,6 +717,37 @@ int main(int argc, char **argv)	{
 				printf("[+] Random mode\n");
 				FLAGRANDOM = 1;
 				FLAGBSGSMODE =  3;
+			break;
+			case 'r':
+				void processInput(char* optarg) {
+					Tokenizer t;
+					stringtokenizer(optarg, &t);
+					switch(t.n) {
+						case 1:
+							std::string range_start = getHexFromBiner(); // Mendapatkan nilai hexadecimal dari fungsi
+							if(isValidHex(range_start.c_str())) {
+								FLAGRANGE = 1;
+								std::string range_end = secp->order.GetBase16();
+								// Lanjutkan dengan logika menggunakan range_start dan range_end
+							} else {
+								fprintf(stderr, "[E] Invalid hexstring : %s.\n", range_start.c_str());
+							}
+						break;
+						case 2: {
+							std::string range_start = t.nextToken(0);
+							std::string range_end = t.nextToken(1);
+							if(isValidHex(range_start) && isValidHex(range_end)) {
+								bool FLAGRANGE = 1;
+								std::cout << "Range: " << range_start << " to " << range_end << std::endl;
+							} else {
+								std::cerr << "[E] Invalid hexstring in range." << std::endl;
+							}
+						} break;
+						default:
+							printf("[E] Unknown number of Range Params: %i\n", t.n);
+						break;
+					}
+				}
 			break;
 			case 'r':
 				if(optarg != NULL)	{
