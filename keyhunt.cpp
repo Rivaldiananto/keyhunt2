@@ -1,5 +1,5 @@
 /*
-Develop by Alberto
+Develop by rivaldiananto
 email: rivaldiananto@gmail.com
 */
 
@@ -97,47 +97,34 @@ struct bPload	{
 	uint32_t finished;
 };
 
+// Function to convert binary string to hexadecimal string
 std::string binToHex(const std::string& bin) {
     std::stringstream ss;
-    ss << std::hex << std::stoi(bin, nullptr, 2); // Konversi biner ke integer, kemudian ke hex
+    ss << std::hex << std::stoi(bin, nullptr, 2);
     return ss.str();
 }
 
-int main() {
-    // Rentang biner yang diinginkan
-    std::string bin_start = "000000";
-    std::string bin_end = "111111";
+// Simple Tokenizer structure for simulation
+struct Tokenizer {
+    std::string tokens[2];
+    int n;
 
-    // Konversi dari biner ke hexadecimal
-    std::string hex_start = binToHex(bin_start);
-    std::string hex_end = binToHex(bin_end);
-
-    // Tampilkan rentang dalam format yang sesuai untuk penggunaan internal atau sebagai parameter program
-    std::cout << "r " << hex_start << ":" << hex_end << std::endl;
-
-    return 0;
-}
-
-std::string getHexRange() {
-    // Misalnya, kita asumsikan `range_converter` adalah program konversi kita dan dijalankan dari lokasi yang sama.
-    std::string command = "./keyhunt";
-    std::string data;
-    char buffer[128];
-    FILE* pipe = popen(command.c_str(), "r");
-
-    if (!pipe) throw std::runtime_error("popen() failed!");
-    try {
-        while (fgets(buffer, sizeof buffer, pipe) != NULL) {
-            data += buffer;
+    Tokenizer(const std::string& range) {
+        size_t pos = range.find(':');
+        if (pos != std::string::npos) {
+            tokens[0] = binToHex(range.substr(0, pos));
+            tokens[1] = binToHex(range.substr(pos + 1));
+            n = 2;
+        } else {
+            tokens[0] = binToHex(range);
+            n = 1;
         }
-    } catch (...) {
-        pclose(pipe);
-        throw;
     }
 
-    pclose(pipe);
-    return data;
-}
+    std::string nextToken(int index) {
+        return tokens[index];
+    }
+};
 
 #if defined(_WIN64) && !defined(__CYGWIN__)
 #define PACK( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop))
@@ -169,7 +156,7 @@ char *raw_baseminikey = NULL;
 char *minikeyN = NULL;
 int minikey_n_limit;
 	
-const char *version = "0.2.230519 Satoshi Quest";
+const char *version = "0.2.060524 Satoshi Quest";
 
 #define CPU_GRP_SIZE 1024
 
@@ -347,7 +334,6 @@ int FLAGSTRIDE = 0;
 int FLAGSEARCH = 2;
 int FLAGBITRANGE = 0;
 int FLAGRANGE = 0;
-int FLAGBINER = 0;
 int FLAGFILE = 0;
 int FLAGMODE = MODE_ADDRESS;
 int FLAGCRYPTO = 0;
@@ -534,7 +520,7 @@ int main(int argc, char **argv)	{
 	
 	printf("[+] Version %s, developed by rivaldiananto\n",version);
 
-	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:P:I:k:l:m:N:n:p:r:s:t:v:G:8:z:")) != -1) {
+	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:")) != -1) {
 		switch(c) {
 			case 'h':
 				menu();
@@ -722,6 +708,36 @@ int main(int argc, char **argv)	{
 				printf("[+] Random mode\n");
 				FLAGRANDOM = 1;
 				FLAGBSGSMODE =  3;
+			break;
+			case 'P':
+			if(optarg != NULL) {
+				Tokenizer t(optarg);
+				switch(t.n) {
+					case 1: {
+						std::string range_start = t.nextToken(0);
+						if(isValidHex(range_start)) {
+							bool FLAGRANGE = true;
+							std::string range_end = "FFFFFFFF";  // Assume max value for demonstration
+							std::cout << "Range: " << range_start << " to " << range_end << std::endl;
+						} else {
+							std::cerr << "[E] Invalid hexstring: " << range_start << std::endl;
+						}
+					} break;
+					case 2: {
+						std::string range_start = t.nextToken(0);
+						std::string range_end = t.nextToken(1);
+						if(isValidHex(range_start) && isValidHex(range_end)) {
+							bool FLAGRANGE = true;
+							std::cout << "Range: " << range_start << " to " << range_end << std::endl;
+						} else {
+							std::cerr << "[E] Invalid hexstring in range." << std::endl;
+						}
+					} break;
+					default:
+						std::cout << "[E] Unknown number of Range Params: " << t.n << std::endl;
+						break;
+				}
+			}
 			break;
 			case 'r':
 				if(optarg != NULL)	{
