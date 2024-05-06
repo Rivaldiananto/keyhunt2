@@ -3,6 +3,11 @@ Develop by Alberto
 email: rivaldiananto@gmail.com
 */
 
+#include <iostream>
+#include <sstream>
+#include <bitset>
+#include <cstring>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -718,7 +723,7 @@ int main(int argc, char **argv)	{
 				FLAGRANDOM = 1;
 				FLAGBSGSMODE =  3;
 			break;
-			case 'r':
+			case 'P':
 				void processInput(char* optarg) {
 					Tokenizer t;
 					stringtokenizer(optarg, &t);
