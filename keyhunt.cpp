@@ -737,6 +737,7 @@ int main(int argc, char **argv)	{
 							} else {
 								fprintf(stderr, "[E] Invalid hexstring : %s.\n", range_start.c_str());
 							}
+						}
 						break;
 						case 2: {
 							std::string range_start = t.nextToken(0);
@@ -747,7 +748,8 @@ int main(int argc, char **argv)	{
 							} else {
 								std::cerr << "[E] Invalid hexstring in range." << std::endl;
 							}
-						} break;
+						} 
+						break;
 						default:
 							printf("[E] Unknown number of Range Params: %i\n", t.n);
 						break;
