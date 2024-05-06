@@ -723,39 +723,6 @@ int main(int argc, char **argv)	{
 				FLAGRANDOM = 1;
 				FLAGBSGSMODE =  3;
 			break;
-			case 'P':
-				void processInput(char* optarg) {
-					Tokenizer t;
-					stringtokenizer(optarg, &t);
-					switch(t.n) {
-						case 1:
-							std::string range_start = getHexFromBiner(); // Mendapatkan nilai hexadecimal dari fungsi
-							if(isValidHex(range_start.c_str())) {
-								FLAGRANGE = 1;
-								std::string range_end = secp->order.GetBase16();
-								// Lanjutkan dengan logika menggunakan range_start dan range_end
-							} else {
-								fprintf(stderr, "[E] Invalid hexstring : %s.\n", range_start.c_str());
-							}
-						}
-						break;
-						case 2: {
-							std::string range_start = t.nextToken(0);
-							std::string range_end = t.nextToken(1);
-							if(isValidHex(range_start) && isValidHex(range_end)) {
-								bool FLAGRANGE = 1;
-								std::cout << "Range: " << range_start << " to " << range_end << std::endl;
-							} else {
-								std::cerr << "[E] Invalid hexstring in range." << std::endl;
-							}
-						} 
-						break;
-						default:
-							printf("[E] Unknown number of Range Params: %i\n", t.n);
-						break;
-					}
-				}
-			break;
 			case 'r':
 				if(optarg != NULL)	{
 					stringtokenizer(optarg,&t);
