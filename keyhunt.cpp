@@ -3,11 +3,6 @@ Develop by rivaldiananto
 email: rivaldiananto@gmail.com
 */
 
-#include <iostream>
-#include <sstream>
-#include <bitset>
-#include <cstring>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -97,35 +92,6 @@ struct bPload	{
 	uint32_t finished;
 };
 
-// Function to convert binary string to hexadecimal string
-std::string binToHex(const std::string& bin) {
-    std::stringstream ss;
-    ss << std::hex << std::stoi(bin, nullptr, 2);
-    return ss.str();
-}
-
-// Simple Tokenizer structure for simulation
-struct Tokenizer {
-    std::string tokens[2];
-    int n;
-
-    Tokenizer(const std::string& range) {
-        size_t pos = range.find(':');
-        if (pos != std::string::npos) {
-            tokens[0] = binToHex(range.substr(0, pos));
-            tokens[1] = binToHex(range.substr(pos + 1));
-            n = 2;
-        } else {
-            tokens[0] = binToHex(range);
-            n = 1;
-        }
-    }
-
-    std::string nextToken(int index) {
-        return tokens[index];
-    }
-};
-
 #if defined(_WIN64) && !defined(__CYGWIN__)
 #define PACK( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop))
 PACK(struct publickey
@@ -156,7 +122,7 @@ char *raw_baseminikey = NULL;
 char *minikeyN = NULL;
 int minikey_n_limit;
 	
-const char *version = "0.2.060524 Satoshi Quest";
+const char *version = "0.2.230519 Satoshi Quest";
 
 #define CPU_GRP_SIZE 1024
 
@@ -446,6 +412,21 @@ Int lambda,lambda2,beta,beta2;
 
 Secp256K1 *secp;
 
+// Fungsi untuk mengonversi integer ke string biner 6-bit
+std::string intToBinary6(int num) {
+    std::bitset<6> bin(num);
+    return bin.to_string();
+}
+
+// Fungsi untuk menghasilkan semua kombinasi biner 6-bit
+std::vector<std::string> generateAllCombinations() {
+    std::vector<std::string> allCombinations;
+    for (int i = 0; i < 64; ++i) {
+        allCombinations.push_back(intToBinary6(i));
+    }
+    return allCombinations;
+}
+
 int main(int argc, char **argv)	{
 	char buffer[2048];
 	char rawvalue[32];
@@ -520,7 +501,7 @@ int main(int argc, char **argv)	{
 	
 	printf("[+] Version %s, developed by rivaldiananto\n",version);
 
-	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:")) != -1) {
+	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:P:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:")) != -1) {
 		switch(c) {
 			case 'h':
 				menu();
@@ -696,6 +677,27 @@ int main(int argc, char **argv)	{
 					break;
 				}
 			break;
+		    case 'P':
+            if (optarg == NULL) {
+                fprintf(stderr, "You must provide the number of patterns after -P\n");
+                exit(EXIT_FAILURE);
+            }
+            int numPatterns = atoi(optarg);
+            if (numPatterns <= 0) {
+                fprintf(stderr, "Number of patterns must be positive.\n");
+                exit(EXIT_FAILURE);
+            }
+            std::vector<std::string> allCombinations = generateAllCombinations();
+            if (numPatterns > 32) numPatterns = 32;  // Pastikan tidak melebihi ukuran rawvalue
+            for (int i = 0; i < numPatterns; ++i) {
+                strncpy(rawvalue[i], allCombinations[i % allCombinations.size()].c_str(), sizeof(rawvalue[i])-1);
+                rawvalue[i][sizeof(rawvalue[i])-1] = '\0';  // Pastikan string selalu null-terminated
+            }
+            // Untuk demonstrasi, kita bisa print isi rawvalue setelah menyimpannya
+            for (int i = 0; i < numPatterns; ++i) {
+                std::cout << "[+]Stored pattern " << i+1 << ": " << rawvalue[i] << std::endl;
+            }
+            break;
 			case 'n':
 				FLAG_N = 1;
 				str_N = optarg;
@@ -708,36 +710,6 @@ int main(int argc, char **argv)	{
 				printf("[+] Random mode\n");
 				FLAGRANDOM = 1;
 				FLAGBSGSMODE =  3;
-			break;
-			case 'P':
-			if(optarg != NULL) {
-				Tokenizer t(optarg);
-				switch(t.n) {
-					case 1: {
-						std::string range_start = t.nextToken(0);
-						if(isValidHex(range_start)) {
-							bool FLAGRANGE = true;
-							std::string range_end = "FFFFFFFF";  // Assume max value for demonstration
-							std::cout << "Range: " << range_start << " to " << range_end << std::endl;
-						} else {
-							std::cerr << "[E] Invalid hexstring: " << range_start << std::endl;
-						}
-					} break;
-					case 2: {
-						std::string range_start = t.nextToken(0);
-						std::string range_end = t.nextToken(1);
-						if(isValidHex(range_start) && isValidHex(range_end)) {
-							bool FLAGRANGE = true;
-							std::cout << "Range: " << range_start << " to " << range_end << std::endl;
-						} else {
-							std::cerr << "[E] Invalid hexstring in range." << std::endl;
-						}
-					} break;
-					default:
-						std::cout << "[E] Unknown number of Range Params: " << t.n << std::endl;
-						break;
-				}
-			}
 			break;
 			case 'r':
 				if(optarg != NULL)	{
