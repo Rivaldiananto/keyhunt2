@@ -7,6 +7,8 @@ email: rivaldiananto@gmail.com
 #include <bitset>
 #include <vector>
 #include <string>
+#include <ostream>
+#include <iostream>
 
 #include <stdio.h>
 #include <stdlib.h>
