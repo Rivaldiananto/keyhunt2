@@ -3,6 +3,11 @@ Develop by rivaldiananto
 email: rivaldiananto@gmail.com
 */
 
+
+#include <bitset>
+#include <vector>
+#include <string>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -501,7 +506,7 @@ int main(int argc, char **argv)	{
 	
 	printf("[+] Version %s, developed by rivaldiananto\n",version);
 
-	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:P:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:")) != -1) {
+	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:P")) != -1) {
 		switch(c) {
 			case 'h':
 				menu();
@@ -677,27 +682,6 @@ int main(int argc, char **argv)	{
 					break;
 				}
 			break;
-		    case 'P':
-            if (optarg == NULL) {
-                fprintf(stderr, "You must provide the number of patterns after -P\n");
-                exit(EXIT_FAILURE);
-            }
-            int numPatterns = atoi(optarg);
-            if (numPatterns <= 0) {
-                fprintf(stderr, "Number of patterns must be positive.\n");
-                exit(EXIT_FAILURE);
-            }
-            std::vector<std::string> allCombinations = generateAllCombinations();
-            if (numPatterns > 32) numPatterns = 32;  // Pastikan tidak melebihi ukuran rawvalue
-            for (int i = 0; i < numPatterns; ++i) {
-                strncpy(rawvalue[i], allCombinations[i % allCombinations.size()].c_str(), sizeof(rawvalue[i])-1);
-                rawvalue[i][sizeof(rawvalue[i])-1] = '\0';  // Pastikan string selalu null-terminated
-            }
-            // Untuk demonstrasi, kita bisa print isi rawvalue setelah menyimpannya
-            for (int i = 0; i < numPatterns; ++i) {
-                std::cout << "[+]Stored pattern " << i+1 << ": " << rawvalue[i] << std::endl;
-            }
-            break;
 			case 'n':
 				FLAG_N = 1;
 				str_N = optarg;
@@ -810,6 +794,27 @@ int main(int argc, char **argv)	{
 				fprintf(stderr,"[E] Unknow opcion -%c\n",c);
 				exit(EXIT_FAILURE);
 			break;
+            case 'P':
+            if (optarg == NULL) {
+                fprintf(stderr, "You must provide the number of patterns after -P\n");
+                exit(EXIT_FAILURE);
+            }
+            int numPatterns = atoi(optarg);
+            if (numPatterns <= 0) {
+                fprintf(stderr, "Number of patterns must be positive.\n");
+                exit(EXIT_FAILURE);
+            }
+            std::vector<std::string> allCombinations = generateAllCombinations();
+            if (numPatterns > 32) numPatterns = 32;  // Pastikan tidak melebihi ukuran rawvalue
+            for (int i = 0; i < numPatterns; ++i) {
+                strncpy(rawvalue[i], allCombinations[i % allCombinations.size()].c_str(), sizeof(rawvalue[i])-1);
+                rawvalue[i][sizeof(rawvalue[i])-1] = '\0';  // Pastikan string selalu null-terminated
+            }
+            // Untuk demonstrasi, kita bisa print isi rawvalue setelah menyimpannya
+            for (int i = 0; i < numPatterns; ++i) {
+                std::cout << "[+]Stored pattern " << i+1 << ": " << rawvalue[i] << std::endl;
+            }
+            break;
 		}
 	}
 	
