@@ -489,16 +489,20 @@ std::vector<std::string> readLinesFromFile(const char* filename) {
     return lines;
 }
 
+
 // Fungsi untuk memproses rentang dari file
 void processHexRanges(const std::vector<std::string>& lines) {
     for (const auto& line : lines) {
-        if (isValidHex(line.c_str())) {
+        // Konversi std::string ke char* dengan membuat salinan
+        char* hexString = strdup(line.c_str());
+        if (isValidHex(hexString)) {
             // Logika untuk memproses setiap rentang heksadesimal
-            printf("[+] Processing range: %s\n", line.c_str());
+            printf("[+] Processing range: %s\n", hexString);
             // Tambahkan logika pemrosesan di sini
         } else {
-            fprintf(stderr, "[E] Invalid hexstring : %s.\n", line.c_str());
+            fprintf(stderr, "[E] Invalid hexstring : %s.\n", hexString);
         }
+        free(hexString);  // Jangan lupa untuk membebaskan memori
     }
 }
 
