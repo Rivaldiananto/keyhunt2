@@ -766,9 +766,9 @@ int main(int argc, char **argv)	{
 			break;
 			case 'r':
 				if(optarg != NULL) {
-					if (strncmp(optarg, "file:", 5) == 0) {
-						// Membaca hex dari file
-						std::string filename = optarg + 5;
+					if (strncmp(optarg, "file:", 5) == 0 || optarg[0] != '0') {
+						// Membaca hex dari file jika optarg diawali dengan "file:" atau bukan heksadesimal langsung
+						std::string filename = optarg[0] == 'f' ? optarg + 5 : optarg;
 						std::string fileContent = readFromFile(filename.c_str());
 						std::vector<char> fileContentVec(fileContent.begin(), fileContent.end());
 						fileContentVec.push_back('\0');
