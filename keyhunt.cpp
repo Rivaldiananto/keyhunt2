@@ -489,6 +489,27 @@ std::vector<std::string> readLinesFromFile(const char* filename) {
     return lines;
 }
 
+// Fungsi untuk memproses rentang dari file
+void processHexRanges(const std::vector<std::string>& lines) {
+    for (const auto& line : lines) {
+        char* hexString = strdup(line.c_str());
+        if (isValidHex(hexString)) {
+            // Jika valid, proses sebagai rentang dimulai dan berakhir pada nilai yang sama
+            char* range_start = hexString; // Start range
+            char* range_end = strdup(hexString); // End range, asumsi sama dengan start jika tidak ada informasi lain
+
+            FLAGRANGE = 1; // Flag bahwa rentang valid
+            printf("[+] Processing range: %s to %s\n", range_start, range_end);
+
+            // Tambahkan logika pemrosesan lebih lanjut di sini jika diperlukan
+
+            free(range_end); // Bebaskan range_end
+        } else {
+            fprintf(stderr, "[E] Invalid hexstring : %s.\n", hexString);
+        }
+        free(hexString); // Bebaskan range_start (hexString)
+    }
+}
 
 int main(int argc, char **argv)	{
     uint64_t search_from = 0, search_to = 0;  // Declare search range variables
@@ -565,7 +586,7 @@ int main(int argc, char **argv)	{
 	
 	printf("[+] Version %s, developed by rivaldiananto\n",version);
 
-	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:P:K:")) != -1) {
+	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:P:K")) != -1) {
 		switch(c) {
 
         case 'G': {  // New option to read ranges from a file
@@ -908,38 +929,15 @@ int main(int argc, char **argv)	{
             }
             break;
             case 'K':
-            if(optarg != NULL) {
-                if (optarg[0] != '0') {
-                    // Membaca hex dari file
-                    std::vector<std::string> lines = readLinesFromFile(optarg);
-                    if (!lines.empty()) {
-                        for (const std::string& line : lines) { // Iterasi melalui setiap baris
-                            char* hex_line = strdup(line.c_str());
-                            if (isValidHex(hex_line)) {
-                                // Proses hex yang valid
-                                processHex(hex_line); // Fungsi ini perlu Anda definisikan untuk memproses hex
-                            } else {
-                                fprintf(stderr, "[E] Invalid hexstring : %s.\n", hex_line);
-                            }
-                            free(hex_line); // Bebaskan memori yang dialokasikan dengan strdup
-                        }
-                    } else {
-                        fprintf(stderr, "[E] No valid hexstring found in file: %s.\n", optarg);
-                    }
+                        if(optarg != NULL) {
+                std::vector<std::string> lines = readLinesFromFile(optarg);
+                if (!lines.empty()) {
+                    processHexRanges(lines);
                 } else {
-                    stringtokenizer(optarg, &t);
-                    while (nextToken(&t) != NULL) { // Ini menggantikan switch dengan loop
-                        char* token = nextToken(&t);
-                        if (isValidHex(token)) {
-                            processHex(token);
-                        } else {
-                            fprintf(stderr, "[E] Invalid hexstring : %s.\n", token);
-                        }
-                    }
+                    fprintf(stderr, "[E] No valid hexstring found in file: %s.\n", optarg);
                 }
             }
             break;
-
 		}
 	}
 	
