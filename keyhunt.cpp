@@ -1493,7 +1493,9 @@ int main(int argc, char **argv)	{
 						}
 						memcpy(bloom_bP_checksums[i].data,oldbloom_bP.checksum,32);
 						memcpy(bloom_bP_checksums[i].backup,oldbloom_bP.checksum_backup,32);
-						memset(rawvalue,0,32);
+		for (int i = 0; i < 32; ++i) {
+			memset(rawvalue[i], 0, sizeof(rawvalue[i]));
+		}
 						if(FLAGSKIPCHECKSUM == 0)	{
 							sha256((uint8_t*)bloom_bP[i].bf,bloom_bP[i].bytes,(uint8_t*)rawvalue);
 							if(memcmp(bloom_bP_checksums[i].data,rawvalue,32) != 0 || memcmp(bloom_bP_checksums[i].backup,rawvalue,32) != 0 )	{	/* Verification */
@@ -1542,7 +1544,9 @@ int main(int argc, char **argv)	{
 						fprintf(stderr,"[E] Error reading the file %s\n",buffer_bloom_file);
 						exit(EXIT_FAILURE);
 					}
-					memset(rawvalue,0,32);
+		for (int i = 0; i < 32; ++i) {
+			memset(rawvalue[i], 0, sizeof(rawvalue[i]));
+		}
 					if(FLAGSKIPCHECKSUM == 0)	{								
 						sha256((uint8_t*)bloom_bPx2nd[i].bf,bloom_bPx2nd[i].bytes,(uint8_t*)rawvalue);
 						if(memcmp(bloom_bPx2nd_checksums[i].data,rawvalue,32) != 0 || memcmp(bloom_bPx2nd_checksums[i].backup,rawvalue,32) != 0 )	{		/* Verification */
@@ -1632,7 +1636,9 @@ int main(int argc, char **argv)	{
 						fprintf(stderr,"[E] Error reading the file %s\n",buffer_bloom_file);
 						exit(EXIT_FAILURE);
 					}
-					memset(rawvalue,0,32);
+		for (int i = 0; i < 32; ++i) {
+			memset(rawvalue[i], 0, sizeof(rawvalue[i]));
+		}
 					if(FLAGSKIPCHECKSUM == 0)	{							
 						sha256((uint8_t*)bloom_bPx3rd[i].bf,bloom_bPx3rd[i].bytes,(uint8_t*)rawvalue);
 						if(memcmp(bloom_bPx3rd_checksums[i].data,rawvalue,32) != 0 || memcmp(bloom_bPx3rd_checksums[i].backup,rawvalue,32) != 0 )	{		/* Verification */
