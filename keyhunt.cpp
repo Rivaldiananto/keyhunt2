@@ -508,7 +508,7 @@ int main(int argc, char **argv)	{
 	
 	printf("[+] Version %s, developed by rivaldiananto\n",version);
 
-	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:P")) != -1) {
+	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:P:")) != -1) {
 		switch(c) {
 			case 'h':
 				menu();
