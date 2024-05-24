@@ -456,7 +456,7 @@ std::vector<Range> readRangesFromFile(const std::string& filename) {
     }
     while (std::getline(file, line)) {
         Range range;
-        if (sscanf(line.c_str(), "%llx %llx", &range.start, &range.end) != 2) {
+        if (sscanf(line.c_str(), "%lx %lx", &range.start, &range.end) != 2) {
             std::cerr << "Error parsing line: " << line << std::endl;
             continue;
         }
