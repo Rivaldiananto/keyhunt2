@@ -467,6 +467,7 @@ std::vector<Range> readRangesFromFile(const std::string& filename) {
 }
 
 int main(int argc, char **argv)	{
+    uint64_t search_from = 0, search_to = 0;  // Declare search range variables
 	char buffer[2048];
 	char rawvalue[32][100];  // Adjusted to hold 32 strings of up to 99 characters each
 	struct tothread *tt;	//tothread
@@ -546,6 +547,7 @@ int main(int argc, char **argv)	{
                 case 'G': {  // New option to read ranges from a file
                     std::vector<Range> ranges = readRangesFromFile(optarg);
                     std::cout << "Read " << ranges.size() << " ranges from file." << std::endl;
+        break;  // Properly manage control to avoid fallthrough warnings
                     break;
 
         // Use the first range for search parameters if available
