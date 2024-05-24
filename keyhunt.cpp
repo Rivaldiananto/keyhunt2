@@ -907,27 +907,6 @@ int main(int argc, char **argv)	{
 				fprintf(stderr,"[E] Unknow opcion -%c\n",c);
 				exit(EXIT_FAILURE);
 			break;
-            case 'P':
-            if (optarg == NULL) {
-                fprintf(stderr, "You must provide the number of patterns after -P\n");
-                exit(EXIT_FAILURE);
-            }
-            int numPatterns = atoi(optarg);
-            if (numPatterns <= 0) {
-                fprintf(stderr, "Number of patterns must be positive.\n");
-                exit(EXIT_FAILURE);
-            }
-            std::vector<std::string> allCombinations = generateAllCombinations();
-            if (numPatterns > 32) numPatterns = 32;  // Pastikan tidak melebihi ukuran rawvalue
-            for (int i = 0; i < numPatterns; ++i) {
-		strncpy(rawvalue[i], allCombinations[i % allCombinations.size()].c_str(), sizeof(rawvalue[i][0])-1);
-		rawvalue[i][sizeof(rawvalue[i][0])-1] = '\0';  // Ensure string is always null-terminated
-            }
-            // Untuk demonstrasi, kita bisa print isi rawvalue setelah menyimpannya
-            for (int i = 0; i < numPatterns; ++i) {
-                std::cout << "[+]Stored pattern " << i+1 << ": " << rawvalue[i] << std::endl;
-            }
-            break;
             case 'K':
                         if(optarg != NULL) {
                 std::vector<std::string> lines = readLinesFromFile(optarg);
