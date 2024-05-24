@@ -436,7 +436,7 @@ std::vector<std::string> generateAllCombinations() {
 
 int main(int argc, char **argv)	{
 	char buffer[2048];
-	char rawvalue[32];
+	char rawvalue[32][100];  // Adjusted to hold 32 strings of up to 99 characters each
 	struct tothread *tt;	//tothread
 	Tokenizer t,tokenizerbsgs;	//tokenizer
 	char *fileName = NULL;
@@ -809,8 +809,8 @@ int main(int argc, char **argv)	{
             std::vector<std::string> allCombinations = generateAllCombinations();
             if (numPatterns > 32) numPatterns = 32;  // Pastikan tidak melebihi ukuran rawvalue
             for (int i = 0; i < numPatterns; ++i) {
-                strncpy(rawvalue[i], allCombinations[i % allCombinations.size()].c_str(), sizeof(rawvalue[i])-1);
-                rawvalue[i][sizeof(rawvalue[i])-1] = '\0';  // Pastikan string selalu null-terminated
+		strncpy(rawvalue[i], allCombinations[i % allCombinations.size()].c_str(), sizeof(rawvalue[i][0])-1);
+		rawvalue[i][sizeof(rawvalue[i][0])-1] = '\0';  // Ensure string is always null-terminated
             }
             // Untuk demonstrasi, kita bisa print isi rawvalue setelah menyimpannya
             for (int i = 0; i < numPatterns; ++i) {
