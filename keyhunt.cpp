@@ -434,6 +434,38 @@ std::vector<std::string> generateAllCombinations() {
     return allCombinations;
 }
 
+
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cstdio>
+
+struct Range {
+    uint64_t start;
+    uint64_t end;
+};
+
+std::vector<Range> readRangesFromFile(const std::string& filename) {
+    std::vector<Range> ranges;
+    std::ifstream file(filename);
+    std::string line;
+    if (!file.is_open()) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return ranges; // Return empty vector if file cannot be opened
+    }
+    while (std::getline(file, line)) {
+        Range range;
+        if (sscanf(line.c_str(), "%llx %llx", &range.start, &range.end) != 2) {
+            std::cerr << "Error parsing line: " << line << std::endl;
+            continue;
+        }
+        ranges.push_back(range);
+    }
+    file.close();
+    return ranges;
+}
+
 int main(int argc, char **argv)	{
 	char buffer[2048];
 	char rawvalue[32][100];  // Adjusted to hold 32 strings of up to 99 characters each
@@ -508,9 +540,15 @@ int main(int argc, char **argv)	{
 	
 	printf("[+] Version %s, developed by rivaldiananto\n",version);
 
-	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:P:")) != -1) {
+	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:P")) != -1) {
 		switch(c) {
-			case 'h':
+
+                case 'G': {  // New option to read ranges from a file
+                    std::vector<Range> ranges = readRangesFromFile(optarg);
+                    std::cout << "Read " << ranges.size() << " ranges from file." << std::endl;
+                    break;
+                }
+            			case 'h':
 				menu();
 			break;
 			case '6':
