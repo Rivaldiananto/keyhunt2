@@ -545,7 +545,7 @@ int main(int argc, char **argv)	{
 	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:P")) != -1) {
 		switch(c) {
 
-                case 'G': {  // New option to read ranges from a file
+        case 'G': {  // New option to read ranges from a file
                     std::vector<Range> ranges = readRangesFromFile(optarg);
                     std::cout << "Read " << ranges.size() << " ranges from file." << std::endl;
         break;  // Properly manage control to avoid fallthrough warnings
@@ -559,7 +559,8 @@ int main(int argc, char **argv)	{
         }
         
                 }
-            			case 'h':
+			break;
+            case 'h':
 				menu();
 			break;
 			case '6':
