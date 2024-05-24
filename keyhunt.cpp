@@ -469,20 +469,26 @@ std::vector<Range> readRangesFromFile(const std::string& filename) {
 
 #include <fstream>
 #include <sstream>
+#include <vector>
+#include <string>
 #include <ctype.h>
 
-// Deklarasi fungsi untuk membaca konten file
-std::string readFromFile(const char* filename) {
+// Fungsi untuk membaca baris dari file teks
+std::vector<std::string> readLinesFromFile(const char* filename) {
     std::ifstream file(filename);
-    std::stringstream buffer;
+    std::vector<std::string> lines;
+    std::string line;
     if (file.is_open()) {
-        buffer << file.rdbuf();
+        while (std::getline(file, line)) {
+            lines.push_back(line);
+        }
         file.close();
     } else {
         fprintf(stderr, "[E] Could not open file: %s\n", filename);
     }
-    return buffer.str();
+    return lines;
 }
+
 
 int main(int argc, char **argv)	{
     uint64_t search_from = 0, search_to = 0;  // Declare search range variables
@@ -766,20 +772,15 @@ int main(int argc, char **argv)	{
 			break;
 			case 'r':
 				if(optarg != NULL) {
-					if (strncmp(optarg, "file:", 5) == 0 || optarg[0] != '0') {
-						// Membaca hex dari file jika optarg diawali dengan "file:" atau bukan heksadesimal langsung
-						std::string filename = optarg[0] == 'f' ? optarg + 5 : optarg;
-						std::string fileContent = readFromFile(filename.c_str());
-						std::vector<char> fileContentVec(fileContent.begin(), fileContent.end());
-						fileContentVec.push_back('\0');
-						stringtokenizer(fileContentVec.data(), &t);
-						
-						if (t.n > 0) {
-							range_start = nextToken(&t);
+					if (optarg[0] != '0') {
+						// Membaca hex dari file
+						std::vector<std::string> lines = readLinesFromFile(optarg);
+						if (!lines.empty()) {
+							range_start = strdup(lines.front().c_str());
 							if (isValidHex(range_start)) {
 								FLAGRANGE = 1;
-								if (t.n > 1) {
-									range_end = nextToken(&t);
+								if (lines.size() > 1) {
+									range_end = strdup(lines.back().c_str());
 									if (!isValidHex(range_end)) {
 										fprintf(stderr,"[E] Invalid hexstring : %s.\n", range_end);
 										FLAGRANGE = 0;
@@ -791,7 +792,7 @@ int main(int argc, char **argv)	{
 								fprintf(stderr,"[E] Invalid hexstring : %s.\n", range_start);
 							}
 						} else {
-							fprintf(stderr,"[E] No valid hexstring found in file: %s.\n", filename.c_str());
+							fprintf(stderr,"[E] No valid hexstring found in file: %s.\n", optarg);
 						}
 					} else {
 						stringtokenizer(optarg, &t);
