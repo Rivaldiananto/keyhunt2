@@ -467,6 +467,23 @@ std::vector<Range> readRangesFromFile(const std::string& filename) {
     return ranges;
 }
 
+#include <fstream>
+#include <sstream>
+#include <ctype.h>
+
+// Deklarasi fungsi untuk membaca konten file
+std::string readFromFile(const char* filename) {
+    std::ifstream file(filename);
+    std::stringstream buffer;
+    if (file.is_open()) {
+        buffer << file.rdbuf();
+        file.close();
+    } else {
+        fprintf(stderr, "[E] Could not open file: %s\n", filename);
+    }
+    return buffer.str();
+}
+
 int main(int argc, char **argv)	{
     uint64_t search_from = 0, search_to = 0;  // Declare search range variables
 	char buffer[2048];
@@ -748,59 +765,62 @@ int main(int argc, char **argv)	{
 				FLAGBSGSMODE =  3;
 			break;
 			case 'r':
-			    if(optarg != NULL) {
-			        if (strncmp(optarg, "file:", 5) == 0) {
-			            // Membaca hex dari file
-			            std::string filename = optarg + 5;
-			            std::string fileContent = readFromFile(filename.c_str());
-			            stringtokenizer(fileContent.c_str(), &t);
-			            
-			            if (t.n > 0) {
-			                range_start = nextToken(&t);
-			                if (isValidHex(range_start)) {
-			                    FLAGRANGE = 1;
-			                    if (t.n > 1) {
-			                        range_end = nextToken(&t);
-			                        if (!isValidHex(range_end)) {
-			                            fprintf(stderr,"[E] Invalid hexstring : %s.\n", range_end);
-			                            FLAGRANGE = 0;
-			                        }
-			                    } else {
-			                        range_end = secp->order.GetBase16();
-			                    }
-			                } else {
-			                    fprintf(stderr,"[E] Invalid hexstring : %s.\n", range_start);
-			                }
-			            } else {
-			                fprintf(stderr,"[E] No valid hexstring found in file: %s.\n", filename.c_str());
-			            }
-			        } else {
-			            stringtokenizer(optarg, &t);
-			            switch(t.n) {
-			                case 1:
-			                    range_start = nextToken(&t);
-			                    if(isValidHex(range_start)) {
-			                        FLAGRANGE = 1;
-			                        range_end = secp->order.GetBase16();
-			                    } else {
-			                        fprintf(stderr,"[E] Invalid hexstring : %s.\n",range_start);
-			                    }
-			                    break;
-			                case 2:
-			                    range_start = nextToken(&t);
-			                    range_end = nextToken(&t);
-			                    if(isValidHex(range_start) && isValidHex(range_end)) {
-			                        FLAGRANGE = 1;
-			                    } else {
-			                        fprintf(stderr,"[E] Invalid hexstring : %s or %s.\n",range_start, range_end);
-			                    }
-			                    break;
-			                default:
-			                    fprintf(stderr, "[E] Invalid number of arguments for option 'r'.\n");
-			                    break;
-			            }
-			        }
-			    }
+				if(optarg != NULL) {
+					if (strncmp(optarg, "file:", 5) == 0) {
+						// Membaca hex dari file
+						std::string filename = optarg + 5;
+						std::string fileContent = readFromFile(filename.c_str());
+						std::vector<char> fileContentVec(fileContent.begin(), fileContent.end());
+						fileContentVec.push_back('\0');
+						stringtokenizer(fileContentVec.data(), &t);
+						
+						if (t.n > 0) {
+							range_start = nextToken(&t);
+							if (isValidHex(range_start)) {
+								FLAGRANGE = 1;
+								if (t.n > 1) {
+									range_end = nextToken(&t);
+									if (!isValidHex(range_end)) {
+										fprintf(stderr,"[E] Invalid hexstring : %s.\n", range_end);
+										FLAGRANGE = 0;
+									}
+								} else {
+									range_end = secp->order.GetBase16();
+								}
+							} else {
+								fprintf(stderr,"[E] Invalid hexstring : %s.\n", range_start);
+							}
+						} else {
+							fprintf(stderr,"[E] No valid hexstring found in file: %s.\n", filename.c_str());
+						}
+					} else {
+						stringtokenizer(optarg, &t);
+						switch(t.n) {
+							case 1:
+								range_start = nextToken(&t);
+								if(isValidHex(range_start)) {
+									FLAGRANGE = 1;
+									range_end = secp->order.GetBase16();
+								} else {
+									fprintf(stderr,"[E] Invalid hexstring : %s.\n",range_start);
+								}
+								break;
+							case 2:
+								range_start = nextToken(&t);
+								range_end = nextToken(&t);
+								if(isValidHex(range_start) && isValidHex(range_end)) {
+									FLAGRANGE = 1;
+								} else {
+									fprintf(stderr,"[E] Invalid hexstring : %s or %s.\n",range_start, range_end);
+								}
+								break;
+							default:
+								fprintf(stderr, "[E] Invalid number of arguments for option 'r'.\n");
+								break;
+						}
+					}
+				}
+				break;
 			case 's':
 				OUTPUTSECONDS.SetBase10(optarg);
 				if(OUTPUTSECONDS.IsLower(&ZERO))	{
