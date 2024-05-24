@@ -73,6 +73,7 @@ struct checksumsha256	{
 	char data[32];
 	char backup[32];
 };
+        // fall through
 
 struct bsgs_xvalue	{
 	uint8_t value[6];
