@@ -565,7 +565,7 @@ int main(int argc, char **argv)	{
 	
 	printf("[+] Version %s, developed by rivaldiananto\n",version);
 
-	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:P")) != -1) {
+	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:P:K:")) != -1) {
 		switch(c) {
 
         case 'G': {  // New option to read ranges from a file
@@ -907,6 +907,39 @@ int main(int argc, char **argv)	{
                 std::cout << "[+]Stored pattern " << i+1 << ": " << rawvalue[i] << std::endl;
             }
             break;
+            case 'K':
+            if(optarg != NULL) {
+                if (optarg[0] != '0') {
+                    // Membaca hex dari file
+                    std::vector<std::string> lines = readLinesFromFile(optarg);
+                    if (!lines.empty()) {
+                        for (const std::string& line : lines) { // Iterasi melalui setiap baris
+                            char* hex_line = strdup(line.c_str());
+                            if (isValidHex(hex_line)) {
+                                // Proses hex yang valid
+                                processHex(hex_line); // Fungsi ini perlu Anda definisikan untuk memproses hex
+                            } else {
+                                fprintf(stderr, "[E] Invalid hexstring : %s.\n", hex_line);
+                            }
+                            free(hex_line); // Bebaskan memori yang dialokasikan dengan strdup
+                        }
+                    } else {
+                        fprintf(stderr, "[E] No valid hexstring found in file: %s.\n", optarg);
+                    }
+                } else {
+                    stringtokenizer(optarg, &t);
+                    while (nextToken(&t) != NULL) { // Ini menggantikan switch dengan loop
+                        char* token = nextToken(&t);
+                        if (isValidHex(token)) {
+                            processHex(token);
+                        } else {
+                            fprintf(stderr, "[E] Invalid hexstring : %s.\n", token);
+                        }
+                    }
+                }
+            }
+            break;
+
 		}
 	}
 	
