@@ -804,7 +804,7 @@ case 'r':
                         range_start = hexString;
                         range_end = secp->order.GetBase16();  // Atur range_end ke nilai default jika tidak ada rentang akhir yang ditentukan
                         FLAGRANGE = 1;
-                        processHexRangesss(range_start, range_end);  // Proses rentang
+                        processHexRanges(range_start, range_end);  // Proses rentang
                     } else {
                         fprintf(stderr, "[E] Invalid hexstring : %s.\n", hexString);
                     }
@@ -822,7 +822,7 @@ case 'r':
                     if(isValidHex(range_start)) {
                         FLAGRANGE = 1;
                         range_end = secp->order.GetBase16();
-                        processHexRangesss(range_start, range_end);
+                        processHexRanges(range_start, range_end);
                     } else {
                         fprintf(stderr,"[E] Invalid hexstring : %s.\n",range_start);
                     }
@@ -832,7 +832,7 @@ case 'r':
                     range_end = nextToken(&t);
                     if(isValidHex(range_start) && isValidHex(range_end)) {
                         FLAGRANGE = 1;
-                        processHexRangesss(range_start, range_end);
+                        processHexRanges(range_start, range_end);
                     } else {
                         fprintf(stderr,"[E] Invalid hexstring : %s or %s.\n",range_start, range_end);
                     }
