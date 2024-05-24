@@ -547,6 +547,14 @@ int main(int argc, char **argv)	{
                     std::vector<Range> ranges = readRangesFromFile(optarg);
                     std::cout << "Read " << ranges.size() << " ranges from file." << std::endl;
                     break;
+
+        // Use the first range for search parameters if available
+        if (!ranges.empty()) {
+            search_from = ranges[0].start;
+            search_to = ranges[0].end;
+            printf("[+] Using range from file: from 0x%lx to 0x%lx\n", search_from, search_to);
+        }
+        
                 }
             			case 'h':
 				menu();
