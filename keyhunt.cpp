@@ -489,6 +489,18 @@ std::vector<std::string> readLinesFromFile(const char* filename) {
     return lines;
 }
 
+// Fungsi untuk memproses rentang dari file
+void processHexRanges(const std::vector<std::string>& lines) {
+    for (const auto& line : lines) {
+        if (isValidHex(line.c_str())) {
+            // Logika untuk memproses setiap rentang heksadesimal
+            printf("[+] Processing range: %s\n", line.c_str());
+            // Tambahkan logika pemrosesan di sini
+        } else {
+            fprintf(stderr, "[E] Invalid hexstring : %s.\n", line.c_str());
+        }
+    }
+}
 
 int main(int argc, char **argv)	{
     uint64_t search_from = 0, search_to = 0;  // Declare search range variables
@@ -776,21 +788,7 @@ int main(int argc, char **argv)	{
 						// Membaca hex dari file
 						std::vector<std::string> lines = readLinesFromFile(optarg);
 						if (!lines.empty()) {
-							range_start = strdup(lines.front().c_str());
-							if (isValidHex(range_start)) {
-								FLAGRANGE = 1;
-								if (lines.size() > 1) {
-									range_end = strdup(lines.back().c_str());
-									if (!isValidHex(range_end)) {
-										fprintf(stderr,"[E] Invalid hexstring : %s.\n", range_end);
-										FLAGRANGE = 0;
-									}
-								} else {
-									range_end = secp->order.GetBase16();
-								}
-							} else {
-								fprintf(stderr,"[E] Invalid hexstring : %s.\n", range_start);
-							}
+							processHexRanges(lines);
 						} else {
 							fprintf(stderr,"[E] No valid hexstring found in file: %s.\n", optarg);
 						}
