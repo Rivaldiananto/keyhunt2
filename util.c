@@ -166,7 +166,7 @@ void addItemList(char *data, List *l)	{
 	l->n++;
 }
 
-int isValidHex(char *data)	{
+int isValidHex(char *data,const char *data)	{
 	char c;
 	int len,i,valid = 1;
 	len = strlen(data);
