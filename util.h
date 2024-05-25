@@ -26,7 +26,7 @@ void tohex_dst(char *ptr,int length,char *dst);
 int hasMoreTokens(Tokenizer *t);
 char *nextToken(Tokenizer *t);
 
-int isValidHex(char *data);
+int isValidHex(char *data,const char *data);
 void freetokenizer(Tokenizer *t);
 void stringtokenizer(char *data,Tokenizer *t);
 
