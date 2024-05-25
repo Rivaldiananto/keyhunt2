@@ -907,27 +907,28 @@ int main(int argc, char **argv)	{
 				fprintf(stderr,"[E] Unknow opcion -%c\n",c);
 				exit(EXIT_FAILURE);
 			break;
-		case 'K':
-			if(optarg != NULL) {
-				if (optarg[0] != '0') {
-					// Membaca hex dari file
-					std::vector<std::string> lines = readLinesFromFile(optarg);
-					FLAGRANGE = 0; // Reset FLAGRANGE
-					for (const auto& line : lines) {
-						if (isValidHex(line.c_str())) {
-							// Proses setiap baris hex yang valid
-							processHexRanges(line);
-							FLAGRANGE = 1; // Set FLAGRANGE jika ada setidaknya satu baris valid
-						}
-					}
-					if (FLAGRANGE == 1) {
-						std::cout << "Proses hex yang valid telah dilakukan." << std::endl;
-					} else {
-						std::cout << "Tidak ada baris hex yang valid dalam file." << std::endl;
-					}
-				}
-			}
-			break;
+			case 'K':
+			    if(optarg != NULL) {
+			        if (optarg[0] != '0') {
+			            // Membaca hex dari file
+			            std::vector<std::string> lines = readLinesFromFile(optarg);
+			            FLAGRANGE = 0; // Reset FLAGRANGE
+			            for (const auto& line : lines) {
+			                if (isValidHex(line.c_str())) {
+			                    // Proses setiap baris hex yang valid
+			                    std::vector<std::string> tempLine{line}; // Buat vektor dari baris saat ini
+			                    processHexRanges(tempLine); // Kirimkan vektor ke fungsi
+			                    FLAGRANGE = 1; // Set FLAGRANGE jika ada setidaknya satu baris valid
+			                }
+			            }
+			            if (FLAGRANGE == 1) {
+			                std::cout << "Proses hex yang valid telah dilakukan." << std::endl;
+			            } else {
+			                std::cout << "Tidak ada baris hex yang valid dalam file." << std::endl;
+			            }
+			        }
+			    }
+			    break;
 		}
 	}
 	
