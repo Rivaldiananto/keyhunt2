@@ -916,7 +916,7 @@ int main(int argc, char **argv)	{
 					for (const auto& line : lines) {
 						if (isValidHex(line.c_str())) {
 							// Proses setiap baris hex yang valid
-							processHexLine(line);
+							processHexRanges(line);
 							FLAGRANGE = 1; // Set FLAGRANGE jika ada setidaknya satu baris valid
 						}
 					}
