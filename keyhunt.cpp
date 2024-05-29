@@ -405,14 +405,14 @@ Point point_temp,point_temp2;	//Temp value for some process
 
 Int n_range_start;
 Int n_range_end;
-Int n_range_diff;
+Int n_range_difff;
 Int n_range_aux;
 
 Int lambda,lambda2,beta,beta2;
 
 Secp256K1 *secp;
 
-int main(int argc, char **argv)	{
+int main(int argc, char **argv) {	{
 	char buffer[2048];
 	char rawvalue[32];
 	struct tothread *tt;	//tothread
@@ -827,12 +827,12 @@ int main(int argc, char **argv)	{
 					n_range_start.Set(&n_range_end);
 					n_range_end.Set(&n_range_aux);
 				}
-				n_range_diff.Set(&n_range_end);
-				n_range_dif(n_range_start.IsEqual(&n_range_end) == true ) {
+				n_range_difff.Set(&n_range_end);
+				n_range_diff(n_range_start.IsEqual(&n_range_end) == true ) {
   fprintf(stderr, "[E] Start and End range are the same, which is now allowed.\n");
   exit(0);
 }
-\nFallback to random mode!\n");
+Fallback to random mode!\n");
 			FLAGRANGE = 0;
 		}
 	}
@@ -841,15 +841,15 @@ int main(int argc, char **argv)	{
 		if(FLAGRANGE == 0 && FLAGBITRANGE == 0)	{
 			n_range_start.SetInt32(1);
 			n_range_end.Set(&secp->order);
-			n_range_diff.Set(&n_range_end);
-			n_range_diff.Sub(&n_range_start);
+			n_range_difff.Set(&n_range_end);
+			n_range_difff.Sub(&n_range_start);
 		}
 		else	{
 			if(FLAGBITRANGE)	{
 				n_range_start.SetBase16(bit_range_str_min);
 				n_range_end.SetBase16(bit_range_str_max);
-				n_range_diff.Set(&n_range_end);
-				n_range_diff.Sub(&n_range_start);
+				n_range_difff.Set(&n_range_end);
+				n_range_difff.Sub(&n_range_start);
 			}
 			else	{
 				if(FLAGRANGE == 0)	{
@@ -1087,8 +1087,8 @@ int main(int argc, char **argv)	{
 				n_range_start.SetBase16(bit_range_str_min);
 				n_range_end.SetBase16(bit_range_str_max);
 
-				n_range_diff.Set(&n_range_end);
-				n_range_diff.Sub(&n_range_start);
+				n_range_difff.Set(&n_range_end);
+				n_range_difff.Sub(&n_range_start);
 				printf("[+] Bit Range %i\n",bitrange);
 				printf("[+] -- from : 0x%s\n",bit_range_str_min);
 				printf("[+] -- to   : 0x%s\n",bit_range_str_max);
@@ -1103,13 +1103,13 @@ int main(int argc, char **argv)	{
 
 			n_range_start.SetInt32(1);
 			n_range_end.Set(&secp->order);
-			n_range_diff.Rand(&n_range_start,&n_range_end);
-			n_range_start.Set(&n_range_diff);
+			n_range_difff.Rand(&n_range_start,&n_range_end);
+			n_range_start.Set(&n_range_difff);
 		}
 		BSGS_CURRENT.Set(&n_range_start);
 
 
-		if(n_range_diff.IsLower(&BSGS_N) )	{
+		if(n_range_difff.IsLower(&BSGS_N) )	{
 			fprintf(stderr,"[E] the given range is small\n");
 			exit(EXIT_FAILURE);
 		}
