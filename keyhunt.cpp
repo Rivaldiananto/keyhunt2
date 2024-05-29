@@ -1,14 +1,7 @@
 /*
-Develop by rivaldiananto
-email: rivaldiananto@gmail.com
+Develop by Alberto
+email: albertobsd@gmail.com
 */
-
-
-#include <bitset>
-#include <vector>
-#include <string>
-#include <ostream>
-#include <iostream>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -72,7 +65,6 @@ uint32_t  THREADBPWORKLOAD = 1048576;
 struct checksumsha256	{
 	char data[32];
 	char backup[32];
-        // fall through
 };
 
 struct bsgs_xvalue	{
@@ -420,101 +412,9 @@ Int lambda,lambda2,beta,beta2;
 
 Secp256K1 *secp;
 
-// Fungsi untuk mengonversi integer ke string biner 6-bit
-std::string intToBinary6(int num) {
-    std::bitset<6> bin(num);
-    return bin.to_string();
-}
-
-// Fungsi untuk menghasilkan semua kombinasi biner 6-bit
-std::vector<std::string> generateAllCombinations() {
-    std::vector<std::string> allCombinations;
-    for (int i = 0; i < 64; ++i) {
-        allCombinations.push_back(intToBinary6(i));
-    }
-    return allCombinations;
-}
-
-
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <cstdio>
-
-struct Range {
-    uint64_t start;
-    uint64_t end;
-};
-
-std::vector<Range> readRangesFromFile(const std::string& filename) {
-    std::vector<Range> ranges;
-    std::ifstream file(filename);
-    std::string line;
-    if (!file.is_open()) {
-        std::cerr << "Error opening file: " << filename << std::endl;
-        return ranges; // Return empty vector if file cannot be opened
-    }
-    while (std::getline(file, line)) {
-        Range range;
-        if (sscanf(line.c_str(), "%lx %lx", &range.start, &range.end) != 2) {
-            std::cerr << "Error parsing line: " << line << std::endl;
-            continue;
-        }
-        ranges.push_back(range);
-    }
-    file.close();
-    return ranges;
-}
-
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <string>
-#include <ctype.h>
-
-// Fungsi untuk membaca baris dari file teks
-std::vector<std::string> readLinesFromFile(const char* filename) {
-    std::ifstream file(filename);
-    std::vector<std::string> lines;
-    std::string line;
-    if (file.is_open()) {
-        while (std::getline(file, line)) {
-            lines.push_back(line);
-        }
-        file.close();
-    } else {
-        fprintf(stderr, "[E] Could not open file: %s\n", filename);
-    }
-    return lines;
-}
-
-// Fungsi untuk memproses rentang dari file
-void processHexRanges(const std::vector<std::string>& lines) {
-    for (const auto& line : lines) {
-        char* hexString = strdup(line.c_str());
-        if (isValidHex(hexString)) {
-            // Jika valid, proses sebagai rentang dimulai dan berakhir pada nilai yang sama
-            char* range_start = hexString; // Start range
-            char* range_end = strdup(hexString); // End range, asumsi sama dengan start jika tidak ada informasi lain
-
-            FLAGRANGE = 1; // Flag bahwa rentang valid
-            printf("[+] Processing range: %s to %s\n", range_start, range_end);
-
-            // Tambahkan logika pemrosesan lebih lanjut di sini jika diperlukan
-
-            free(range_end); // Bebaskan range_end
-        } else {
-            fprintf(stderr, "[E] Invalid hexstring : %s.\n", hexString);
-        }
-        free(hexString); // Bebaskan range_start (hexString)
-    }
-}
-
 int main(int argc, char **argv)	{
-    uint64_t search_from = 0, search_to = 0;  // Declare search range variables
 	char buffer[2048];
-	char rawvalue[32][100];  // Adjusted to hold 32 strings of up to 99 characters each
+	char rawvalue[32];
 	struct tothread *tt;	//tothread
 	Tokenizer t,tokenizerbsgs;	//tokenizer
 	char *fileName = NULL;
@@ -584,27 +484,11 @@ int main(int argc, char **argv)	{
 	
 	
 	
-	printf("[+] Version %s, developed by rivaldiananto\n",version);
+	printf("[+] Version %s, developed by AlbertoBSD\n",version);
 
-	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:P:K")) != -1) {
+	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:")) != -1) {
 		switch(c) {
-
-        case 'G': {  // New option to read ranges from a file
-                    std::vector<Range> ranges = readRangesFromFile(optarg);
-                    std::cout << "Read " << ranges.size() << " ranges from file." << std::endl;
-        break;  // Properly manage control to avoid fallthrough warnings
-                    break;
-
-        // Use the first range for search parameters if available
-        if (!ranges.empty()) {
-            search_from = ranges[0].start;
-            search_to = ranges[0].end;
-            printf("[+] Using range from file: from 0x%lx to 0x%lx\n", search_from, search_to);
-        }
-        
-                }
-			break;
-            case 'h':
+			case 'h':
 				menu();
 			break;
 			case '6':
@@ -792,43 +676,40 @@ int main(int argc, char **argv)	{
 				FLAGBSGSMODE =  3;
 			break;
 			case 'r':
-			    if (optarg != NULL) {
-			        if (optarg[0] != '0') {
-			            // Membaca hex dari file
-			            std::vector<std::string> lines = readLinesFromFile(optarg);
-			            if (!lines.empty()) {
-			                processHexRanges(lines); // Proses semua rentang dari file
-			            } else {
-			                fprintf(stderr, "[E] No valid hexstring found in file: %s.\n", optarg);
-			            }
-			        } else {
-			            stringtokenizer(optarg, &t);
-			            switch (t.n) {
-			                case 1:
-			                    range_start = nextToken(&t);
-			                    if (isValidHex(range_start)) {
-			                        FLAGRANGE = 1;
-			                        range_end = secp->order.GetBase16();
-			                    } else {
-			                        fprintf(stderr, "[E] Invalid hexstring : %s.\n", range_start);
-			                    }
-			                    break;
-			                case 2:
-			                    range_start = nextToken(&t);
-			                    range_end = nextToken(&t);
-			                    if (isValidHex(range_start) && isValidHex(range_end)) {
-			                        FLAGRANGE = 1;
-			                    } else {
-			                        fprintf(stderr, "[E] Invalid hexstring : %s or %s.\n", range_start, range_end);
-			                    }
-			                    break;
-			                default:
-			                    fprintf(stderr, "[E] Invalid number of arguments for option 'r'.\n");
-			                    break;
-			            }
-			        }
-			    }
-			    break;
+				if(optarg != NULL)	{
+					stringtokenizer(optarg,&t);
+					switch(t.n)	{
+						case 1:
+							range_start = nextToken(&t);
+							if(isValidHex(range_start)) {
+								FLAGRANGE = 1;
+								range_end = secp->order.GetBase16();
+							}
+							else	{
+								fprintf(stderr,"[E] Invalid hexstring : %s.\n",range_start);
+							}
+						break;
+						case 2:
+							range_start = nextToken(&t);
+							range_end	 = nextToken(&t);
+							if(isValidHex(range_start) && isValidHex(range_end)) {
+									FLAGRANGE = 1;
+							}
+							else	{
+								if(isValidHex(range_start)) {
+									fprintf(stderr,"[E] Invalid hexstring : %s\n",range_start);
+								}
+								else	{
+									fprintf(stderr,"[E] Invalid hexstring : %s\n",range_end);
+								}
+							}
+						break;
+						default:
+							printf("[E] Unknow number of Range Params: %i\n",t.n);
+						break;
+					}
+				}
+			break;
 			case 's':
 				OUTPUTSECONDS.SetBase10(optarg);
 				if(OUTPUTSECONDS.IsLower(&ZERO))	{
@@ -893,28 +774,6 @@ int main(int argc, char **argv)	{
 				fprintf(stderr,"[E] Unknow opcion -%c\n",c);
 				exit(EXIT_FAILURE);
 			break;
-			case 'K':
-			    if(optarg != NULL) {
-			        if (optarg[0] != '0') {
-			            // Membaca hex dari file
-			            std::vector<std::string> lines = readLinesFromFile(optarg);
-			            FLAGRANGE = 0; // Reset FLAGRANGE
-			            for (const auto& line : lines) {
-			                if (isValidHex(line.c_str())) {
-			                    // Proses setiap baris hex yang valid
-			                    std::vector<std::string> tempLine{line}; // Buat vektor dari baris saat ini
-			                    processHexRanges(tempLine); // Kirimkan vektor ke fungsi
-			                    FLAGRANGE = 1; // Set FLAGRANGE jika ada setidaknya satu baris valid
-			                }
-			            }
-			            if (FLAGRANGE == 1) {
-			                std::cout << "Proses hex yang valid telah dilakukan." << std::endl;
-			            } else {
-			                std::cout << "Tidak ada baris hex yang valid dalam file." << std::endl;
-			            }
-			        }
-			    }
-			    break;
 		}
 	}
 	
@@ -969,15 +828,11 @@ int main(int argc, char **argv)	{
 					n_range_end.Set(&n_range_aux);
 				}
 				n_range_diff.Set(&n_range_end);
-				n_range_diff.Sub(&n_range_start);
-			}
-			else	{
-				fprintf(stderr,"[E] Start and End range can't be great than N\nFallback to random mode!\n");
-				FLAGRANGE = 0;
-			}
-		}
-		else	{
-			fprintf(stderr,"[E] Start and End range can't be the same\nFallback to random mode!\n");
+				n_range_dif(n_range_start.IsEqual(&n_range_end) == true ) {
+  fprintf(stderr, "[E] Start and End range are the same, which is now allowed.\n");
+  exit(0);
+}
+\nFallback to random mode!\n");
 			FLAGRANGE = 0;
 		}
 	}
@@ -1591,9 +1446,7 @@ int main(int argc, char **argv)	{
 						}
 						memcpy(bloom_bP_checksums[i].data,oldbloom_bP.checksum,32);
 						memcpy(bloom_bP_checksums[i].backup,oldbloom_bP.checksum_backup,32);
-		for (int i = 0; i < 32; ++i) {
-			memset(rawvalue[i], 0, sizeof(rawvalue[i]));
-		}
+						memset(rawvalue,0,32);
 						if(FLAGSKIPCHECKSUM == 0)	{
 							sha256((uint8_t*)bloom_bP[i].bf,bloom_bP[i].bytes,(uint8_t*)rawvalue);
 							if(memcmp(bloom_bP_checksums[i].data,rawvalue,32) != 0 || memcmp(bloom_bP_checksums[i].backup,rawvalue,32) != 0 )	{	/* Verification */
@@ -1642,9 +1495,7 @@ int main(int argc, char **argv)	{
 						fprintf(stderr,"[E] Error reading the file %s\n",buffer_bloom_file);
 						exit(EXIT_FAILURE);
 					}
-		for (int i = 0; i < 32; ++i) {
-			memset(rawvalue[i], 0, sizeof(rawvalue[i]));
-		}
+					memset(rawvalue,0,32);
 					if(FLAGSKIPCHECKSUM == 0)	{								
 						sha256((uint8_t*)bloom_bPx2nd[i].bf,bloom_bPx2nd[i].bytes,(uint8_t*)rawvalue);
 						if(memcmp(bloom_bPx2nd_checksums[i].data,rawvalue,32) != 0 || memcmp(bloom_bPx2nd_checksums[i].backup,rawvalue,32) != 0 )	{		/* Verification */
@@ -1734,9 +1585,7 @@ int main(int argc, char **argv)	{
 						fprintf(stderr,"[E] Error reading the file %s\n",buffer_bloom_file);
 						exit(EXIT_FAILURE);
 					}
-		for (int i = 0; i < 32; ++i) {
-			memset(rawvalue[i], 0, sizeof(rawvalue[i]));
-		}
+					memset(rawvalue,0,32);
 					if(FLAGSKIPCHECKSUM == 0)	{							
 						sha256((uint8_t*)bloom_bPx3rd[i].bf,bloom_bPx3rd[i].bytes,(uint8_t*)rawvalue);
 						if(memcmp(bloom_bPx3rd_checksums[i].data,rawvalue,32) != 0 || memcmp(bloom_bPx3rd_checksums[i].backup,rawvalue,32) != 0 )	{		/* Verification */
@@ -5914,7 +5763,7 @@ void menu() {
 	printf("\nExample:\n\n");
 	printf("./keyhunt -m rmd160 -f tests/unsolvedpuzzles.rmd -b 66 -l compress -R -q -t 8\n\n");
 	printf("This line runs the program with 8 threads from the range 20000000000000000 to 40000000000000000 without stats output\n\n");
-	printf("Developed by rivaldiananto\tTips BTC: 1Coffee1jV4gB5gaXfHgSHDz9xx9QSECVW\n");
+	printf("Developed by AlbertoBSD\tTips BTC: 1Coffee1jV4gB5gaXfHgSHDz9xx9QSECVW\n");
 	printf("Thanks to Iceland always helping and sharing his ideas.\nTips to Iceland: bc1q39meky2mn5qjq704zz0nnkl0v7kj4uz6r529at\n\n");
 	exit(EXIT_FAILURE);
 }
