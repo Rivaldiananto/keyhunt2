@@ -1,6 +1,6 @@
 /*
-Develop by Alberto
-email: albertobsd@gmail.com
+Develop by RIVADIANANTO
+email: RIVADIANANTO@gmail.com
 */
 
 #include <stdio.h>
@@ -405,14 +405,14 @@ Point point_temp,point_temp2;	//Temp value for some process
 
 Int n_range_start;
 Int n_range_end;
-Int n_range_difff;
+Int n_range_diff;
 Int n_range_aux;
 
 Int lambda,lambda2,beta,beta2;
 
 Secp256K1 *secp;
 
-int main(int argc, char **argv) {	{
+int main(int argc, char **argv)	{
 	char buffer[2048];
 	char rawvalue[32];
 	struct tothread *tt;	//tothread
@@ -484,7 +484,7 @@ int main(int argc, char **argv) {	{
 	
 	
 	
-	printf("[+] Version %s, developed by AlbertoBSD\n",version);
+	printf("[+] Version %s, developed by RIVADIANANTO\n",version);
 
 	while ((c = getopt(argc, argv, "deh6MqRSB:b:c:C:E:f:I:k:l:m:N:n:p:r:s:t:v:G:8:z:")) != -1) {
 		switch(c) {
@@ -827,12 +827,16 @@ int main(int argc, char **argv) {	{
 					n_range_start.Set(&n_range_end);
 					n_range_end.Set(&n_range_aux);
 				}
-				n_range_difff.Set(&n_range_end);
-				n_range_diff(n_range_start.IsEqual(&n_range_end) == true ) {
-  fprintf(stderr, "[E] Start and End range are the same, which is now allowed.\n");
-  exit(0);
-}
-Fallback to random mode!\n");
+				n_range_diff.Set(&n_range_end);
+				n_range_diff.Sub(&n_range_start);
+			}
+			else	{
+				fprintf(stderr,"[E] Start and End range can't be great than N\nFallback to random mode!\n");
+				FLAGRANGE = 0;
+			}
+		}
+		else	{
+			fprintf(stderr,"[E] Start and End range can't be the same\nFallback to random mode!\n");
 			FLAGRANGE = 0;
 		}
 	}
@@ -841,15 +845,15 @@ Fallback to random mode!\n");
 		if(FLAGRANGE == 0 && FLAGBITRANGE == 0)	{
 			n_range_start.SetInt32(1);
 			n_range_end.Set(&secp->order);
-			n_range_difff.Set(&n_range_end);
-			n_range_difff.Sub(&n_range_start);
+			n_range_diff.Set(&n_range_end);
+			n_range_diff.Sub(&n_range_start);
 		}
 		else	{
 			if(FLAGBITRANGE)	{
 				n_range_start.SetBase16(bit_range_str_min);
 				n_range_end.SetBase16(bit_range_str_max);
-				n_range_difff.Set(&n_range_end);
-				n_range_difff.Sub(&n_range_start);
+				n_range_diff.Set(&n_range_end);
+				n_range_diff.Sub(&n_range_start);
 			}
 			else	{
 				if(FLAGRANGE == 0)	{
@@ -1087,8 +1091,8 @@ Fallback to random mode!\n");
 				n_range_start.SetBase16(bit_range_str_min);
 				n_range_end.SetBase16(bit_range_str_max);
 
-				n_range_difff.Set(&n_range_end);
-				n_range_difff.Sub(&n_range_start);
+				n_range_diff.Set(&n_range_end);
+				n_range_diff.Sub(&n_range_start);
 				printf("[+] Bit Range %i\n",bitrange);
 				printf("[+] -- from : 0x%s\n",bit_range_str_min);
 				printf("[+] -- to   : 0x%s\n",bit_range_str_max);
@@ -1103,13 +1107,13 @@ Fallback to random mode!\n");
 
 			n_range_start.SetInt32(1);
 			n_range_end.Set(&secp->order);
-			n_range_difff.Rand(&n_range_start,&n_range_end);
-			n_range_start.Set(&n_range_difff);
+			n_range_diff.Rand(&n_range_start,&n_range_end);
+			n_range_start.Set(&n_range_diff);
 		}
 		BSGS_CURRENT.Set(&n_range_start);
 
 
-		if(n_range_difff.IsLower(&BSGS_N) )	{
+		if(n_range_diff.IsLower(&BSGS_N) )	{
 			fprintf(stderr,"[E] the given range is small\n");
 			exit(EXIT_FAILURE);
 		}
@@ -5763,7 +5767,7 @@ void menu() {
 	printf("\nExample:\n\n");
 	printf("./keyhunt -m rmd160 -f tests/unsolvedpuzzles.rmd -b 66 -l compress -R -q -t 8\n\n");
 	printf("This line runs the program with 8 threads from the range 20000000000000000 to 40000000000000000 without stats output\n\n");
-	printf("Developed by AlbertoBSD\tTips BTC: 1Coffee1jV4gB5gaXfHgSHDz9xx9QSECVW\n");
+	printf("Developed by RIVADIANANTO\tTips BTC: 1Coffee1jV4gB5gaXfHgSHDz9xx9QSECVW\n");
 	printf("Thanks to Iceland always helping and sharing his ideas.\nTips to Iceland: bc1q39meky2mn5qjq704zz0nnkl0v7kj4uz6r529at\n\n");
 	exit(EXIT_FAILURE);
 }
